@@ -9,10 +9,10 @@ public class Drawing extends JPanel{
     private Image background;
     private Image planetIcon;
     private Image rocketIcon;
-    private int pMass;
-    private int pRadius;
-    private int rMass;
-    private int rVelocity;
+    private long pMass;
+    private long pRadius;
+    private long rMass;
+    private long rVelocity;
     private int xLoc;
     private int yLoc;
 
@@ -27,36 +27,43 @@ public class Drawing extends JPanel{
         yLoc = 300;
     }
 
-    public void drawPlanet(int mass, int radius){
+    public void drawPlanet(long mass, long radius){
         pMass = mass;
         pRadius = radius;
         repaint();
     }
 
-    public void drawRocket(int mass, int velocity){
+    public void drawRocket(long mass, long velocity){
         rMass = mass;
         rVelocity= 0;
         repaint();
     }
 
-    public void launchRocket(int mass, int velocity){
+    public void launchRocket(long mass, long velocity){
         rMass = mass;
-        rVelocity= 1;
-        Timer timer = new Timer(200, null);
-        timer.start();
-        timer.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                xLoc+=3;
-                yLoc-=2;
-                repaint();
-                if (xLoc >= 600){
-                    timer.stop();
+        rVelocity= velocity;
+        if (isLaunch(velocity)){
+            Timer timer = new Timer(200, null);
+            timer.start();
+            timer.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    xLoc+=3;
+                    yLoc-=2;
+                    repaint();
+                    if (xLoc >= 600){
+                        timer.stop();
+                    }
                 }
-            }
-        });
+            });
+        }
 
 
+    }
+
+    public boolean isLaunch(long velocity){
+        double escapeVelocity = Math.sqrt((2*6.67e-11*pMass)/pRadius);
+        return velocity >= escapeVelocity;
     }
 
     @Override
@@ -69,8 +76,8 @@ public class Drawing extends JPanel{
         } catch (IOException e){
             e.printStackTrace();
         }
-        int pScale = (pRadius/(planetIcon.getWidth(null)))+100;
-        int rScale = (rMass*10)/(rocketIcon.getWidth(null))+100;
+        int pScale = (int) (pRadius/(planetIcon.getWidth(null)))+100;
+        int rScale = (int) (rMass*10)/(rocketIcon.getWidth(null))+100;
         g.clearRect(0,0,800,600);
         g.drawImage(background, 0, 0, null);
         g.drawImage(planetIcon, 400,300, pScale, pScale, null);
