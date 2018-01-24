@@ -29,10 +29,10 @@ public class Simulator extends JFrame{
     private JPanel playArea;
     private JPanel calculateArea;
 
-    private int pMass;
-    private int rMass;
-    private int velocity;
-    private int radius;
+    private long pMass;
+    private long rMass;
+    private long velocity;
+    private long radius;
 
 
     public Simulator(){
@@ -66,7 +66,9 @@ public class Simulator extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-
+    /*
+    initialize user playarea
+     */
     private void populatePlayArea(){
         labels = new ArrayList<>();
         JLabel rMassLabel = new JLabel();
@@ -144,17 +146,23 @@ public class Simulator extends JFrame{
         parseTextField();
         planetLabel.setText("Planet Mass: "+ pMass + "\n" + "Planet radius: " + radius);
         rocketLabel.setText("Rocket mass: "+ rMass + "\n" + "Rocket velocity: " + velocity);
-        gravityLabel.setText("Gravity: " + getGravity() + " m/sec2");
+        gravityLabel.setText(String.format("Gravity: %.2f", getGravity()));
         calculateArea.add(planetLabel);
         calculateArea.add(rocketLabel);
         calculateArea.add(gravityLabel);
     }
 
+    /*
+    calculates gravity based on pMass and radius
+     */
     public double getGravity(){
         parseTextField();
-        return (6.67e-11*pMass)/(radius*radius);
+        double ratio = (6.67e-11*pMass)/(double)(radius*radius);
+        return ratio;
     }
-
+    /*
+    parses values in textfields
+     */
     public void parseTextField(){
         for (JComponent comp: labels){
             if (comp instanceof JLabel) {
@@ -164,6 +172,9 @@ public class Simulator extends JFrame{
         }
     }
 
+    /*
+    updates value of local variables based on value in textfields
+     */
     public void updateTextField(JLabel label){
         if (label.getText().equals("Mass (e15 kg):")) {
             JTextField field = (JTextField) label.getLabelFor();
@@ -183,6 +194,9 @@ public class Simulator extends JFrame{
         }
     }
 
+    /*
+    restores textfields to default values
+     */
     public void resetTextField(){
         for (JComponent comp: labels){
             if (comp instanceof JLabel){
@@ -211,6 +225,9 @@ public class Simulator extends JFrame{
         new Simulator();
     }
 
+    /*
+    ActionListeners from various button presses
+     */
     private class PlanetUpdater implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e){
@@ -229,7 +246,6 @@ public class Simulator extends JFrame{
             rocketLabel.setText("Rocket mass: "+ rMass + "\n" + "Rocket velocity: " + velocity);
         }
     }
-
 
     private class ResetAction implements ActionListener{
         @Override
@@ -250,7 +266,6 @@ public class Simulator extends JFrame{
     private class LaunchAction implements ActionListener{
         @Override
         public void actionPerformed(ActionEvent e) {
-            parseTextField();
             drawing.launchRocket(rMass, velocity);
         }
 
